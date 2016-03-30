@@ -3,13 +3,17 @@ FROM alpine:edge
 RUN apk --update add rsyslog bash wget
 RUN apk --update add --virtual builddeps build-base git go
 
+ENV BOSUN_VERSION 0.5.0-rc2
+ENV GOPATH /tmp/bosun
 
-RUN mkdir -p /opt/bosun/bin /tmp/bosun
-WORKDIR /tmp/bosun/
-RUN GOPATH=`pwd` go get bosun.org/cmd/bosun
-RUN cp /tmp/bosun/bin/bosun /opt/bosun/bin/
+RUN mkdir -p /opt/bosun/bin ${GOPATH}/src/
+WORKDIR /tmp/bosun/src
+RUN git clone -b ${BOSUN_VERSION} --depth 1 https://github.com/bosun-monitor/bosun.git bosun.org
+WORKDIR /tmp/bosun/src/bosun.org/cmd/bosun
+RUN go build
+RUN cp /tmp/bosun/src/bosun.org/cmd/bosun/bosun /opt/bosun/bin/
 
-RUN rm -rf /tmp/bosun && apk del builddeps && rm -rf /var/cache/apk/*
+RUN rm -rf ${GOPATH} && apk del builddeps && rm -rf /var/cache/apk/*
 
 RUN mkdir -p /opt/bin/ /etc/bosun
 ADD docker/start_bosun.sh /opt/bin/
