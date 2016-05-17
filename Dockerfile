@@ -3,7 +3,7 @@ FROM alpine:edge
 RUN apk --update add rsyslog bash wget
 RUN apk --update add --virtual builddeps build-base git go
 
-ENV BOSUN_VERSION 0.5.0-rc2
+ENV BOSUN_VERSION 0.5.0-rc3
 ENV GOPATH /tmp/bosun
 
 RUN mkdir -p /opt/bosun/bin ${GOPATH}/src/
